@@ -10,5 +10,10 @@ class Funcionario extends Model
     use HasFactory;
 
     protected $table = 'funcionario';
-    protected $fillable = ['NomeFuncionario', 'NumeroFuncionario', 'EnderecoFuncionario', 'DiariaFuncionario'];
+    protected $fillable = ['IDFuncionario', 'nome', 'numero', 'email', 'cpf', 'diaria'];
+
+    public function enderecos()
+    {
+        return $this->belongsToMany(Endereco::class, 'endereco_funcionario', 'IDFuncionario', 'IDEndereco');
+    }
 }
