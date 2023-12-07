@@ -5,9 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Funcionario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
 
 class FuncionarioController extends Controller
 {
+
+    private $enderecoController;
+
+    public function __construct(EnderecoController $enderecoController)
+    {
+        $this->enderecoController = $enderecoController;
+    }
+
 
     public function index()
     {
@@ -16,43 +26,58 @@ class FuncionarioController extends Controller
 
     public function store(Request $request)
     {
+
         $request->validate([
-            'nome' => 'required',
-            'numero' => 'required',
-            'email' => 'required|email',
-            'cpf' => 'required',
-            'diaria' => 'required',
-            'enderecos' => 'array',
+            'funcionario.nome' => 'required',
+            'funcionario.numero' => 'required',
+            'funcionario.email' => 'required|email',
+            'funcionario.cpf' => 'required',
+            'funcionario.diaria' => 'required',
         ]);
+
+        $enderecosSalvos = false;
 
         try {
             DB::beginTransaction();
 
             $funcionario = Funcionario::create([
-                'nome' => $request->nome,
-                'numero' => $request->numero,
-                'email' => $request->email,
-                'cpf' => $request->cpf,
-                'diaria' => $request->diaria,
+                'nome' => $request->input('funcionario.nome'),
+                'numero' => $request->input('funcionario.numero'),
+                'email' => $request->input('funcionario.email'),
+                'cpf' => $request->input('funcionario.cpf'),
+                'diaria' => $request->input('funcionario.diaria'),
             ]);
 
-            if ($request->has('enderecos') && is_array($request->enderecos)) {
-                foreach ($request->enderecos as $enderecoData) {
-                    $EndController = new EnderecoController();
-                    $endereco = $EndController->store($enderecoData);
+            if ($request->has('funcionario.enderecos') && is_array($request->input('funcionario.enderecos'))) {
+                foreach ($request->input('funcionario.enderecos') as $enderecoData) {
+                    $endereco = $this->enderecoController->store($enderecoData);
 
-                    $funcionario->enderecos()->attach($endereco->id);
+                    if ($endereco) {
+                        $funcionario->enderecos()->attach($endereco->IDEndereco);
+                        $enderecosSalvos = true;
+                    } else {
+                        $enderecosSalvos = false;
+                        break; // Se houver um erro em um endereço, interrompemos o loop
+                    }
                 }
+            } else {
+                return response()->json(['error' => 'Erro no endereco a ser cadastrado'], 500);
             }
 
-            DB::commit();
+            if ($enderecosSalvos) {
+                DB::commit();
+                return response()->json(['id' => $funcionario->IDFuncionario], 201);
+            } else {
+                DB::rollback();
+                return response()->json(['error' => 'Nao salvou o endereco'], 500);
+            }
         } catch (\Exception $e) {
+            Log::error('Erro ao criar funcionário e endereços: ' . $e->getMessage());
             DB::rollback();
-            return response()->json(['error' => 'Erro ao criar funcionário e endereços.'], 500);
+            return response()->json(['error' => 'Erro ao criar funcionário e endereços. ' . $e->getMessage()], 500);
         }
-
-        return response()->json(['id' => $funcionario->id], 201);
     }
+
 
 
     public function show($id)

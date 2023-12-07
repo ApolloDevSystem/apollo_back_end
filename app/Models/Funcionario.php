@@ -11,6 +11,7 @@ class Funcionario extends Model
 
     protected $table = 'funcionario';
     protected $fillable = ['IDFuncionario', 'nome', 'numero', 'email', 'cpf', 'diaria'];
+    protected $primaryKey = 'IDFuncionario';
 
     public function enderecos()
     {

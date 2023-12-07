@@ -33,6 +33,14 @@ Route::put('/atualizar-funcionario/{id}', [FuncionarioController::class, 'update
 Route::delete('/deletar-funcionario/{id}', [FuncionarioController::class, 'destroy']);
 Route::get('/funcionarioCpf/{cpf}', [FuncionarioController::class, 'buscaPorCpf']);
 
+Route::apiResource('clientes', ClienteController::class);
+Route::get('/clientes', [ClienteController::class, 'index']);
+Route::post('/criar-cliente', [ClienteController::class, 'store']);
+Route::get('/cliente/{id}', [ClienteController::class, 'show']);
+Route::put('/atualizar-cliente/{id}', [ClienteController::class, 'update']);
+Route::delete('/deletar-cliente/{id}', [ClienteController::class, 'destroy']);
+Route::get('/clienteCpf/{cpf}', [ClienteController::class, 'buscaPorCpf']);
+
 Route::apiResource('usuarios', UserController::class);
 Route::get('/usuarios', [UserController::class, 'index']);
 Route::post('/criar-usuario', [UserController::class, 'store']);
@@ -43,6 +51,7 @@ Route::delete('/usuario/{id}', [UserController::class, 'destroy']);
 Route::apiResource('enderecos', EnderecoController::class);
 Route::get('/enderecos', [EnderecoController::class, 'index']);
 Route::post('/criar-endereco', [EnderecoController::class, 'store']);
-Route::get('/endereco/{id}', [EnderecoController::class, 'show']);
-Route::put('/endereco/{id}', [EnderecoController::class, 'update']);
+Route::get('/endereco-funcionario/{id}', [EnderecoController::class, 'showFunc']);
+Route::get('/endereco-cliente/{id}', [EnderecoController::class, 'showCli']);
+Route::put('/endereco-update/{id}', [EnderecoController::class, 'update']);
 Route::delete('/endereco/{id}', [EnderecoController::class, 'destroy']);

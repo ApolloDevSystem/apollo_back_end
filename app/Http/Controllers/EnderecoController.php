@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Endereco;
+use App\Models\Funcionario;
+use App\Models\Cliente;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class EnderecoController extends Controller
 {
@@ -12,30 +15,48 @@ class EnderecoController extends Controller
         return Endereco::all();
     }
 
-    public function store(Request $request)
+    public function store($enderecoData)
     {
-        $endereco = [
-            'bairro' => $request->bairro,
-            'logradouro' => $request->logradouro,
-            'numero' => $request->numero,
-            'referencia' => $request->referencia,
-            'complemento' => $request->complemento,
-            'CEP' => $request->cep,
-            'UF' => $request->uf,
-            'cidade' => $request->cidade
-        ];
+        try {
+            // Lógica para validar e tratar os dados do endereço, se necessário
 
-        //tratamento
+            // Criar o endereço
+            $endereco = Endereco::create([
+                'bairro' => $enderecoData['bairro'],
+                'logradouro' => $enderecoData['logradouro'],
+                'numero' => $enderecoData['numero'],
+                'referencia' => $enderecoData['referencia'],
+                'complemento' => $enderecoData['complemento'],
+                'CEP' => $enderecoData['CEP'],
+                'UF' => $enderecoData['UF'],
+                'cidade' => $enderecoData['cidade'],
+            ]);
 
-        $enderecoCriado = Endereco::create($endereco);
+            // Retorna o endereço criado
+            return $endereco;
+        } catch (\Exception $e) {
+            // Log de erro (pode ser útil para depuração)
+            Log::error('Erro ao criar endereço: ' . $e->getMessage());
 
-        // Retorna o ID como resposta
-        return $enderecoCriado->id;
+            // Em caso de erro, retorna null
+            return response()->json('Erro ao criar endereço: ' . $e->getMessage());
+        }
     }
 
-    public function show($id)
+    public function showFunc($id)
     {
-        return Endereco::findOrFail($id);
+        $funcionario = Funcionario::findOrFail($id);
+        $enderecos = $funcionario->enderecos;
+
+        return $enderecos;
+    }
+
+    public function showCli($id)
+    {
+        $cliente = Cliente::findOrFail($id);
+        $enderecos = $cliente->enderecos;
+
+        return $enderecos;
     }
 
     public function update(Request $request, $id)

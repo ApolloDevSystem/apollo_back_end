@@ -10,5 +10,11 @@ class Cliente extends Model
     use HasFactory;
 
     protected $table = 'cliente';
-    protected $fillable = ['NomeCliente', 'NumeroCliente', 'EnderecoCliente'];
+    protected $fillable = ['IDCliente', 'nome', 'numero', 'cpf', 'email'];
+    protected $primaryKey = 'IDCliente';
+
+    public function enderecos()
+    {
+        return $this->belongsToMany(Endereco::class, 'endereco_cliente', 'IDCliente', 'IDEndereco');
+    }
 }
