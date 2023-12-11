@@ -53,5 +53,6 @@ Route::get('/enderecos', [EnderecoController::class, 'index']);
 Route::post('/criar-endereco', [EnderecoController::class, 'store']);
 Route::get('/endereco-funcionario/{id}', [EnderecoController::class, 'showFunc']);
 Route::get('/endereco-cliente/{id}', [EnderecoController::class, 'showCli']);
+Route::get('/endereco-usuario/{id}', [EnderecoController::class, 'showUser']);
 Route::put('/endereco-update/{id}', [EnderecoController::class, 'update']);
 Route::delete('/endereco/{id}', [EnderecoController::class, 'destroy']);

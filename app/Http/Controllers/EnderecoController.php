@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Endereco;
 use App\Models\Funcionario;
 use App\Models\Cliente;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -56,7 +57,15 @@ class EnderecoController extends Controller
         $cliente = Cliente::findOrFail($id);
         $enderecos = $cliente->enderecos;
 
-        return $enderecos;
+        return $enderecos == null ? response()->json('tal') : response()->json('tol');
+    }
+
+    public function showUser($id)
+    {
+        $user = User::findOrFail($id);
+        $enderecos = $user->enderecos;
+
+        return $enderecos == null ? [] : response()->json('tol');
     }
 
     public function update(Request $request, $id)
