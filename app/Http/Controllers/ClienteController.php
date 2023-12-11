@@ -6,6 +6,7 @@ use App\Models\Cliente;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 
 class ClienteController extends Controller
@@ -25,12 +26,16 @@ class ClienteController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'cliente.nome' => 'required',
             'cliente.numero' => 'required',
             'cliente.email' => 'required|email',
             'cliente.cpf' => 'required',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
 
         $enderecosSalvos = false;
 
@@ -91,5 +96,12 @@ class ClienteController extends Controller
         $cliente = Cliente::findOrFail($id);
         $cliente->delete();
         return response()->json(['message' => 'Cliente excluído com sucesso']);
+    }
+
+    public function buscaPorCpf($cpf)
+    {
+        $cpfLimpo = str_replace([' ', "'", '"'], '', $cpf);
+        $cliente = Cliente::where('cpf', $cpfLimpo)->get();
+        return response()->json(['clientes' => $cliente]);
     }
 }

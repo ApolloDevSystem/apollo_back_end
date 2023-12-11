@@ -101,8 +101,8 @@ class FuncionarioController extends Controller
 
     public function buscaPorCpf($cpf)
     {
-        $cpfLimpo = str_replace([' ', "'", '"'], '', $cpf);
-        $funcionario = Funcionario::where('cpf', $cpfLimpo)->get();
+      //  $cpfLimpo = str_replace([' ', "'", '"'], '', $cpf);
+        $funcionario = Funcionario::where('cpf', $cpf)->get();
         return response()->json(['funcionarios' => $funcionario]);
     }
 }
